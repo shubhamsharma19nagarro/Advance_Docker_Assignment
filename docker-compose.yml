@@ -1,0 +1,46 @@
+version: "3.8"
+
+services:
+  app:
+    image: shubhamnagarro19/employeeimage-new
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
+      - redis
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/employees?autoReconnect=true&allowPublicKeyRetrieval=true&useSSL=false
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: root
+    networks:
+      - app-network
+
+  db:
+    image: mysql
+    environment:
+      DATABASE_HOST: docker-mysql
+      DATABASE_PORT: 3306
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: employees
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: root
+    volumes:
+      - mysqldb:/var/lib/mysql
+    networks:
+      - app-network
+
+  redis:
+    image: redis:latest
+    restart: always
+    ports:
+      - 6379:6379
+    command: redis-server
+    networks:
+      - app-network
+
+volumes:
+  mysqldb:
+
+networks:
+  app-network:
+    driver: bridge
